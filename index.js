@@ -15,13 +15,11 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Ruta que consultará tu frontend en GitHub Pages
 app.get('/api/status', async (req, res) => {
     try {
-        // Ejecutamos un SELECT directo que no necesita tablas existentes. 
-        // Si la base de datos está viva y la clave es correcta, responderá con éxito.
-        const { data, error } = await supabase.from('').select().limit(0).maybeSingle();
+        // Llamamos a una función matemática interna de Postgres (sign) pasándole un número.
+        // Esto no requiere tablas, no requiere configuración y si las credenciales son correctas, funciona siempre.
+        const { error } = await supabase.rpc('sign', { value: 1 });
         
-        // El código 'PGRST103' o similar solo indica que la ruta está vacía, 
-        // pero si la API Key fuera inválida daría un error 400/401 directo e iría al catch.
-        if (error && error.status === 401) {
+        if (error) {
             throw error;
         }
 
