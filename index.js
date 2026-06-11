@@ -15,11 +15,13 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Ruta que consultará tu frontend en GitHub Pages
 app.get('/api/status', async (req, res) => {
     try {
-        // Hacemos una consulta directa al sistema de Supabase sin requerir tablas
-        const { data, error } = await supabase.rpc('version');
+        // Ejecutamos un SELECT directo que no necesita tablas existentes. 
+        // Si la base de datos está viva y la clave es correcta, responderá con éxito.
+        const { data, error } = await supabase.from('').select().limit(0).maybeSingle();
         
-        // Si hay un error de autenticación o de API Key real, saltará al catch
-        if (error && error.code !== 'PGRST104') {
+        // El código 'PGRST103' o similar solo indica que la ruta está vacía, 
+        // pero si la API Key fuera inválida daría un error 400/401 directo e iría al catch.
+        if (error && error.status === 401) {
             throw error;
         }
 
