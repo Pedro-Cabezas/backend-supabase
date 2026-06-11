@@ -4,17 +4,22 @@ import { createClient } from '@supabase/supabase-js';
 
 const app = express();
 
+// Permitir que tu GitHub Pages se conecte sin bloqueos de CORS
 app.use(cors());
 
+// Configuración del cliente de Supabase
 const supabaseUrl = 'https://fhzgeiitkypgdreblixg.supabase.co';
 const supabaseKey = process.env.SUPABASE_KEY; 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Ruta que consultará tu frontend en GitHub Pages
 app.get('/api/status', async (req, res) => {
     try {
-        const { error } = await supabase.from('_status_check').select('*').limit(1);
-
-        if (error && error.code !== 'PGRST116' && error.code !== '42P01') {
+        // Hacemos una consulta directa al sistema de Supabase sin requerir tablas
+        const { data, error } = await supabase.rpc('version');
+        
+        // Si hay un error de autenticación o de API Key real, saltará al catch
+        if (error && error.code !== 'PGRST104') {
             throw error;
         }
 
@@ -31,5 +36,6 @@ app.get('/api/status', async (req, res) => {
     }
 });
 
+// Render asigna el puerto automáticamente mediante process.env.PORT
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor listo en el puerto ${PORT}`));
