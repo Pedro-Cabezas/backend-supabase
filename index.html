@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estado de la Conexión</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121214;
+            color: #e1e1e6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background-color: #202024;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        h1 { margin-bottom: 20px; font-size: 24px; }
+        .badge {
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            display: inline-block;
+        }
+        .loading { background-color: #f1c40f; color: #000; }
+        .success { background-color: #04d361; color: #fff; }
+        .error { background-color: #e74c3c; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Estado del Proyecto</h1>
+        <div id="status-box" class="badge loading">Conectando al servidor de Render...</div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://backend-supabase-ys8z.onrender.com/api/status';
+
+        async function verificarConexion() {
+            const statusBox = document.getElementById('status-box');
+            try {
+                const response = await fetch(BACKEND_URL);
+                if (!response.ok) throw new Error('Error en la respuesta del servidor');
+                
+                const data = await response.json();
+                
+                statusBox.innerText = `🟢 Backend: ${data.backend} | 💾 BD: ${data.database}`;
+                statusBox.className = "badge success";
+            } catch (error) {
+                statusBox.innerText = "🔴 Error al conectar con el backend";
+                statusBox.className = "badge error";
+                console.error(error);
+            }
+        }
+
+        verificarConexion();
+    </script>
+</body>
+</html>
